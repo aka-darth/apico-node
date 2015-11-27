@@ -1,0 +1,25 @@
+{
+  "name": "apico",
+  "description": "Apico SDK",
+  "version": "0.0.0",
+  "scripts": {    
+	"test": "jasmine-node spec"
+  },
+  "author": {
+    "name": "darth",
+    "email": "ded-geroy@mail.ru",
+    "url": "http://shcoding.xyz"
+  },
+  "main":"index.js",
+  "repository":{
+	"type":"git",
+	"url":""
+  },
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "LICENSE",
+    "HISTORY.md",
+    "index.js"
+  ]
+}
