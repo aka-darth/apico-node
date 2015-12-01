@@ -1,14 +1,14 @@
 {
-  "name": "apico",
+  "name": "apico-node",
   "description": "Apico SDK",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {    
 	"test": "mocha --reporter spec"
   },
   "author": {
     "name": "darth",
     "email": "ded-geroy@mail.ru",
-    "url": "http://shcoding.xyz"
+    "url": "https://apico.net"
   },
   "main":"index.js",
   "repository":{

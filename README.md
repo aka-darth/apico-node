@@ -3,13 +3,13 @@
 Node.js helper library for the [Apico](https://apico.net) API, to create powerful Voice and SMS applications.  
 This helper implements wrappers for Apicoo REST API
 
-More information on Apico APIs and related concepts, refer https://www.apico.net/docs/.
+More information on Apico APIs and related concepts, refer [https://www.apico.net/docs/](https://www.apico.net/docs/).
 
 Installation
 ---------------
 Installing using npm (node package manager):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-npm install apico
+npm install apico-node
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you don't have npm installed or don't want to use it:
 
@@ -27,7 +27,7 @@ Dev Dependencies (for running tests):
 
 ## Usage
 
-`apico` node.js helper can be used to make REST API calls.
+`Apico` node.js helper can be used to make REST API calls.
 
 Apico
 --------
@@ -61,7 +61,7 @@ api.get_number_callforwardings({
 });
 ```
 
-[Full documentation (jsdoc)](jsdoc/apico.html)
+[Full documentation (jsdoc)](https://rawgit.com/aka-darth/apico-node/master/jsdoc/index.html)
 
 Tests
 ------
@@ -76,7 +76,7 @@ License
 
 References
 ----------
-* [Apico API Documentation and Concepts](https://www.plivo.com/docs/)  
+* [Apico API Documentation and Concepts](https://apico.net/docs/)  
 * [Examples](http://github.com/  ... ... )  
 
  
