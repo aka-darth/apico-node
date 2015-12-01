@@ -3,7 +3,7 @@
   "description": "Apico SDK",
   "version": "0.0.0",
   "scripts": {    
-	"test": "jasmine-node spec"
+	"test": "mocha --reporter spec"
   },
   "author": {
     "name": "darth",
@@ -13,9 +13,13 @@
   "main":"index.js",
   "repository":{
 	"type":"git",
-	"url":""
+	"url":"https://github.com/aka-darth/apico-node.git"
   },
   "license": "MIT",
+  "devDependencies":{
+	"jsdoc": "~3.4.0",
+	"mocha": "~2.3.4"
+  },
   "files": [
     "lib/",
     "LICENSE",

@@ -1,6 +1,12 @@
 var http=require('http');
 var https=require('https');
 var fs=require('fs');
+/**
+ * apico
+ * @constructs apico
+ * @param {string} client_sid - your Apico api login
+ * @param {string} client_secret - your Apico api password
+ */
 module.exports=function(client_sid,client_secret){
 	if(!client_sid || !client_secret){
 		throw new Error('Invalid arguments list, client_id client_secret required!');
@@ -132,6 +138,11 @@ module.exports=function(client_sid,client_secret){
   //Public area
   {
     //=============Subscriber ==============
+	/** <a href='https://www.apico.net/docs/api/rest/login' target='_blank'>Apico API/login</a>
+	*@param {string} client_sid - your Apico api login
+	*@param {string} client_secret - your Apico api password
+	*@param {string} [grant_type=client_credentials] - your Apico api grant_type 
+	*/
     this.login=function(login_data,callback){
 		console.log('try to login');
       if(!login_data || !login_data.client_id || !login_data.client_secret){
@@ -150,7 +161,8 @@ module.exports=function(client_sid,client_secret){
 		callback(null,response);
       });
     }
-	
+	/** <a href='https://www.apico.net/docs/api/rest/post-logout' target='_blank'>Apico API/login</a>
+	*/
     this.logout=function(login_data,callback){
       api_send({
         url:"oauth2/auth/logout"
@@ -160,6 +172,8 @@ module.exports=function(client_sid,client_secret){
         callback(null,response);
       });
     }
+	/**<a href='https://www.apico.net/docs/api/rest/check-account-balance' target='_blank'>Apico API/subscribers/{subscriber_id}/balance</a>
+	*/
     this.get_balance=function(input,callback){
 		api_send({
 			url:"v1/subscribers/"+subscr_id+'/balance',
@@ -168,6 +182,8 @@ module.exports=function(client_sid,client_secret){
 			callback(err,res);
 		});
     }
+    /**<a href='https://www.apico.net/docs/api/rest/all-numbers-subscriber' target='_blank'>Apico API/subscribers/{subscriber_id}/numbers</a>
+	*/
     this.get_numbers_list=function(input,callback){
 		api_send({
 			url:"v1/subscribers/"+subscr_id+"/numbers",
@@ -178,6 +194,8 @@ module.exports=function(client_sid,client_secret){
 			callback(null,res.numbers);
 		});
     }
+	/**<a href='https://www.apico.net/docs/api/rest/subscribers' target='_blank'>Apico API/subscribers</a>
+	*/
     this.get_subscribers_list=function(input,callback){
       api_send({
         url:"v1/subscribers",
@@ -187,6 +205,8 @@ module.exports=function(client_sid,client_secret){
           callback(err,res);
       });
     }
+    /**<a href='https://www.apico.net/docs/api/rest/get-subscriber-info' target='_blank'>Apico API/subscribers/{subscriber_id}</a>
+	*/
     this.get_subscriber_info=function(input,callback){
       api_send({
         url:"v1/subscribers/"+subscr_id,
@@ -195,7 +215,9 @@ module.exports=function(client_sid,client_secret){
           callback(err,res.subscriber);
       });
     }
-
+	
+	/** <a href='https://www.apico.net/docs/api/rest/   ' target='_blank'>Apico API/subscribers</a>
+	*/
     this.new_subscriber=function(input,callback){
       if(!input.email || !input.password){
         return callback('Email, password required');
@@ -209,6 +231,8 @@ module.exports=function(client_sid,client_secret){
           callback(err,res);
       });
     }
+	/** <a href='https://www.apico.net/docs/api/rest/   ' target='_blank'>Apico API/subscribers</a>
+	*/
     this.update_subscriber=function(input,callback){
       if(!input.email || !input.password || !input.subscriber_id){
         return callback('Email, password, subscriber_id required');
@@ -223,6 +247,8 @@ module.exports=function(client_sid,client_secret){
       });
 
     }
+	/** <a href='https://www.apico.net/docs/api/rest/   ' target='_blank'>Apico API/subscribers</a>
+	*/
     this.delete_subscriber=function(input,callback){
       if(!input.subscriber_id){
         return callback('subscriber_id required');
@@ -238,7 +264,9 @@ module.exports=function(client_sid,client_secret){
 
 
     //=============App CRUD==============
-    this.get_app_list=function(input,callback){
+    /** <a href='https://www.apico.net/docs/api/rest/list-all-applications' target='_blank'>Apico API/subscribers/{subscriber_id}/apps</a>
+	*/
+	this.get_app_list=function(input,callback){
       api_send({
         url:'v1/subscribers/'+subscr_id+'/apps',
         type:"GET"
@@ -247,6 +275,8 @@ module.exports=function(client_sid,client_secret){
         callback(null,res.apps);
       });
     }
+    /** <a href='https://www.apico.net/docs/api/rest/get-application-info' target='_blank'>Apico API/subscribers/{subscriber_id}/apps/{app_id}</a>
+	*/
     this.get_app=function(input,callback){
       api_send({
         url:'v1/subscribers/'+subscr_id+'/apps/'+input.app_id,
@@ -255,6 +285,11 @@ module.exports=function(client_sid,client_secret){
 		  callback(err,res?res.app:null);
 	  });
     }
+    /** <a href='https://www.apico.net/docs/api/rest/register-application' target='_blank'>Apico API/subscribers/{subscriber_id}/apps/{app_id}</a>
+	*@param {string} name - Application name (255 characters max).
+	*@param {string} description - Application description (255 characters max).
+	*@param {string} url - The URL to the developer’s website or the page of the application on App Store or Google Play (255 characters max).
+	*/
     this.save_app=function(input,callback) {
       if (!input.name || !input.url || !input.description){
         return callback('Invalid arguments list - name,description & url is required');
@@ -271,7 +306,13 @@ module.exports=function(client_sid,client_secret){
         callback(err, res);
       });
     }
-    this.update_app=function(input,callback) {
+    /** <a href='https://www.apico.net/docs/api/rest/update-application-info' target='_blank'>Apico API/subscribers/{subscriber_id}/apps/{app_id}</a>
+	*@param {string} name - Application name (255 characters max).
+	*@param {string} [description] - Application description (255 characters max).
+	*@param {string} url - The URL to the developer’s website or the page of the application on App Store or Google Play (255 characters max).
+	*@param {string} app_id - Application id.
+	*/
+	this.update_app=function(input,callback) {
       if(!input.name || !input.url || !input.app_id){
         return callback('Invalid arguments list - name,url,app_id is required');
       }
@@ -284,7 +325,10 @@ module.exports=function(client_sid,client_secret){
           url:input.url
         }
       },callback);
-    }
+    } 
+	/** <a href='https://www.apico.net/docs/api/rest/delete-application-info' target='_blank'>Apico API/subscribers/{subscriber_id}/apps/{app_id}</a>
+	*@param {string} app_id - Application id.
+	*/
     this.delete_app=function(input,callback) {
       if(!input.app_id){
         return callback('Invalid arguments list - app_id is required');
@@ -297,6 +341,10 @@ module.exports=function(client_sid,client_secret){
 
 
     //=============Numbers ==============
+    /**
+	* @param {number} [offset=0] - offset
+	* @param {number} [limit=1] - limit
+	*/
     this.get_sip_numbers=function(input,callback){
       app.get_numbers({
         type:"SIP",
@@ -305,6 +353,12 @@ module.exports=function(client_sid,client_secret){
         limit:input.limit||1
       },callback);
     }
+    /** <a href='https://www.apico.net/docs/api/rest/available-numbers' target='_blank'>Apico API/available-numbers</a>
+	* @param {string} [type=SIP] - The type of returning phone numbers. This parameter can either be NATIONAL or SIP.
+	* @param {number} [limit=1] - limit
+	* @param {number} [offset=0] - offset
+	* @param {number} [limit=1] - limit
+	*/
     this.get_numbers=function(input,callback){
       api_send({
         url:'v1/numbers',
@@ -319,7 +373,10 @@ module.exports=function(client_sid,client_secret){
         callback(null,res.numbers);
       });
     }
-
+	/** <a href='https://www.apico.net/docs/api/rest/rent-phone-number' target='_blank'>Apico API/apps/{app_id}/numbers</a>
+	* @param {string} number - The phone number which is being rented.
+	* @param {string} [note="Web SDK number"] - A short description of the phone number 
+	*/
     this.rent_number=function(input,callback){
       if(!input.number){//todo: check number better
         return callback('Invalid number');
@@ -333,6 +390,9 @@ module.exports=function(client_sid,client_secret){
         }
       },callback);
     }
+	/** <a href='https://www.apico.net/docs/api/rest/release-number' target='_blank'>Apico API/apps/{app_id}/numbers/{number}</a>
+	* @param {string} number - The phone number which is being rented.
+	*/
     this.release_number=function(input,callback){
       if(!input.number){//todo: check number better
         return callback('Invalid number');
@@ -342,6 +402,11 @@ module.exports=function(client_sid,client_secret){
         type:"DELETE"
       },callback);
     }
+	/** <a href='https://www.apico.net/docs/api/rest/update-number-info' target='_blank'>Apico API/apps/{app_id}/numbers/{number}</a>
+	* @param {string} number - The phone number which is being rented.
+	* @param {string} [note="Web SDK number"] - A short description of the phone number 
+	* @param {string} [password] - Password for this number.
+	*/
     this.update_number=function(input,callback){
 		if(!input.number){//todo: check number better
 			return callback('Invalid number');
@@ -358,6 +423,8 @@ module.exports=function(client_sid,client_secret){
     }
 
 
+    /** <a href='https://www.apico.net/docs/api/rest/all-numbers-application' target='_blank'>Apico API/apps/{app_id}/numbers</a>
+	*/
     this.get_numbers_by_app=function(input,callback){
       api_send({
         url:"v1/apps/"+(input.app_id||app.use_app)+"/numbers",
@@ -367,6 +434,9 @@ module.exports=function(client_sid,client_secret){
         callback(null,res.numbers);
       });
     }
+    /** <a href='https://www.apico.net/docs/api/rest/get-number-info' target='_blank'>Apico API/apps/{app_id}/numbers/{number}</a>
+	* @param {string} number - The phone number which is being rented.
+	*/
     this.get_app_number=function(input,callback){
       if(!input.number)return callback('Invalid number '+input.number);
       api_send({
@@ -376,6 +446,9 @@ module.exports=function(client_sid,client_secret){
     }
 
     //=============Call forwardings CRUD==============
+    /** <a href='https://www.apico.net/docs/api/rest/get-redirect-settings' target='_blank'>Apico API/apps/{app_id}/numbers/{number}/callforwardings</a>
+	* @param {string} number - The phone number.
+	*/
     this.get_number_callforwardings=function(input,callback){
 		if(!input.number)return callback('Invalid number '+input.number);
 		api_send({
@@ -385,6 +458,16 @@ module.exports=function(client_sid,client_secret){
 			callback(err,res.callforwardings);
 		});
     }
+    /** <a href='https://www.apico.net/docs/api/rest/new-redirect-settings' target='_blank'>Apico API/apps/{app_id}/numbers/{number}</a>
+	* @param {string} number - The phone number which is being rented.
+	* @param {array} redirects - An array with the redirection settings.
+	* @param {number} redirects[].order - A number specifying the order of priority the redirect_number is tried after another. Several redirect numbers may have the same priority order. In this case they all ring at the same time.
+	* @param {string} redirects[].redirect_number - A string specifying forwarding destination in E. 164 format.
+	* @param {string} redirects[].redirect_name - A string describing forwarding destination represented in symbols.
+	* @param {string} redirects[].active - A string specifying if this call forwarding configuration is currently active. Either Y or N.
+	* @param {string} redirects[].period - A string specifying time period in which this call forwarding configuration should be active. You can specify limitations regarding the time of day, day of the week, day of the month, or some combination of these.
+	* @param {string} redirects[].period_description - A string describing time period in which this call forwarding configuration should be active.
+	*/
     this.set_number_callforwardings=function(input,callback){
 		if(!input.number)return callback('Invalid number '+input.number);
 		//todo: validation
@@ -402,6 +485,8 @@ module.exports=function(client_sid,client_secret){
 			}
 		},callback);
     }
+	/**
+	*/
     this.update_number_callforwardings=function(input,callback){
       return;
       if(!input.number)return callback('Invalid number '+input.number);
@@ -415,7 +500,9 @@ module.exports=function(client_sid,client_secret){
         callback(null,res);
       });
     }
-    this.delete_number_callforwardings=function(input,callback){
+    /**
+	*/
+	this.delete_number_callforwardings=function(input,callback){
       return;
       if(!input.number)return callback('Invalid number '+input.number);
       api_send({

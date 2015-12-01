@@ -1,8 +1,8 @@
 var should = require('should');
 var apico=require('apico');
 
+//это называется should.be.deepEqual().
 function arr_contain_obj(arr,obj,debug){
-	var founded=false;
 	next_el:for(var i in arr){
 		for(var j in arr[i]){
 			if(obj[j] && arr[i][j]!=obj[j]){
@@ -12,10 +12,10 @@ function arr_contain_obj(arr,obj,debug){
 				if(debug)console.log('\u001b[36m'+j, arr[i][j],obj[j]+'\u001b[39m');
 			}
 		}
-		founded=true;
+		return true;
 		break;
 	}
-	return founded;
+	return false;
 }
 
 
