@@ -1,7 +1,7 @@
 # Apico
 
 Node.js helper library for the [Apico](https://apico.net) API, to create powerful Voice and SMS applications.  
-This helper implements wrappers for Apicoo REST API
+This helper implements wrappers for Apico REST API
 
 More information on Apico APIs and related concepts, refer [https://www.apico.net/docs/](https://www.apico.net/docs/).
 
@@ -37,7 +37,7 @@ Apico
 var Apico=require('apico');
 var api = new Apico(
 	"<your Apico login>",
-	"<your Apicopassword>"
+	"<your Apico password>"
 );
 ```
 
@@ -68,7 +68,8 @@ Tests
 To run tests:
 `npm test`
 
-or
+or  
+
 `mocha --reporter spec`
 
 License

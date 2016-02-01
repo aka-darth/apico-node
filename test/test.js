@@ -1,5 +1,5 @@
-var should = require('should');
-var apico=require('apico');
+var should = require('should'),
+	apico=require('apico');
 
 //это называется should.be.deepEqual().
 function arr_contain_obj(arr,obj,debug){
