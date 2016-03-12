@@ -1,6 +1,7 @@
-var http=require('http');
-var https=require('https');
-var fs=require('fs');
+var http=require('http'),
+https=require('https'),
+fs=require('fs'),
+path=require('path');
 /**
  * apico
  * @constructs apico
@@ -17,18 +18,34 @@ module.exports=function(client_sid,client_secret){
 	//Private area
 	{
 		var token,subscr_id,app=this,queries=[],
-        path=app.predprod?"irl-predprod-api.apico.net":"api.apico.net";
+            baseurl=app.predprod?"irl-predprod-api.apico.net":"api.apico.net";
+        function waiting_request(input,cb){
+            if(app.debug)console.log('push to stack',input);
+            queries.push({input:input,callback:cb});
+            setTimeout(function(){
+                var q=queries.shift();
+                if(q){
+                    //console.log('timeout from stack',q.input);
+                    q.callback(new Error('Timeout - not logged'));
+                }
+            },2000);
+
+        }
+        function send_waiting_request(err,res){
+            while(queries.length>0){
+                q=queries.shift();
+                if(app.debug)console.log('run from stack',q.input);
+                if(err){
+                    q.callback(err);
+                }else{
+                    q.input.url=q.input.url.replace('v1/subscribers/undefined','v1/subscribers/'+res.id);//немного смахивает на костыль, да?
+                    api_send(q.input,q.callback);
+                }
+            }
+        }
 		function api_send(input,callback) {
 			if(input.url!="oauth2/auth/login" && (!token || !subscr_id)){
-				//console.log('push to stack',input);
-				queries.push({input:input,callback:callback});
-				setTimeout(function(){
-					var q=queries.shift();
-					if(q){
-						//console.log('timeout from stack',q.input);
-						q.callback(new Error('Timeout - not logged'));
-					}
-				},2000);
+                waiting_request(input,callback);
 				return;
 			}
 			
@@ -46,7 +63,7 @@ module.exports=function(client_sid,client_secret){
 
 			input.headers['Content-Type']='application/json';
 			var options = {
-				hostname: path,
+				hostname: baseurl,
 				port: app.predprod?80:443,
 				path: input.url,
 				method: input.method,
@@ -60,13 +77,20 @@ module.exports=function(client_sid,client_secret){
 				res.on('end',function(){
 					//BAD.
 					var log='Time: '+new Date().toUTCString()+'\r\nRequest: '+JSON.stringify(options)+'\r\nRequest data: '+JSON.stringify(data)+'\r\nResponse: '+resp+'\r\n\r\n';
-					fs.appendFile('./log.log',log);
+					fs.appendFile(path.join(__dirname,'log.log'),log);
 
 					if(!(res.statusCode-200<100)){
-						//console.log(res.statusCode);
-					  if(app.debug)console.log('REQ',input,' > ',req._headers);
-					  callback(resp||'error');
-					  return;
+                        if(app.debug)console.log('REQ',input,' > ',req._headers);
+                        if(res.statusCode==401 && input.url!="oauth2/auth/login"){
+                            //token expired
+                            input.url=input.url.split('?token=')[0].substr(1);//rollback url
+                            waiting_request(input,callback);
+                            login({
+                                client_id:client_sid,
+                                client_secret:client_secret
+                            },send_waiting_request);
+                            return;
+                        }else return callback(resp||'error');
 					}
 
 					try{
@@ -120,20 +144,7 @@ module.exports=function(client_sid,client_secret){
 		login({
 			client_id:client_sid,
 			client_secret:client_secret
-		},function(err,res){
-			while(queries.length>0){
-				q=queries.shift();
-				//console.log('run from stack',q.input);
-				if(err){
-					q.callback(err);
-					//console.log('fail from stack',q.input);
-				}else{
-					q.input.url=q.input.url.replace('v1/subscribers/undefined','v1/subscribers/'+res.id);//немного смахивает на костыль, да?
-					//console.log('run from stack',q.input);
-					api_send(q.input,q.callback);
-				}
-			}
-		});
+		},send_waiting_request);
 	}
 
     //Public area
@@ -228,8 +239,8 @@ module.exports=function(client_sid,client_secret){
         type:"POST",
         data:input
       },function(err,res){
-        console.log(res,err);
-          callback(err,res);
+        //console.log(res,err);
+        callback(err,res);
       });
     }
     /** <a href='https://www.apico.net/docs/api/rest/   ' target='_blank'>Apico API/subscribers</a>
@@ -412,6 +423,7 @@ module.exports=function(client_sid,client_secret){
         if(!input.number){//todo: check number better
             return callback('Invalid number');
         }
+        console.log(input);
         api_send({
             url:"v1/apps/"+(input.app_id||app.use_app)+"/numbers/"+input.number,
             type:"PUT",
